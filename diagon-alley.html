@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Page E-Commerce</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .product { display: flex; justify-content: space-between; margin: 10px 0; }
+        .cart { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+        .cart h3 { margin: 0; }
+        button { margin-top: 10px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>One-Page E-Commerce</h2>
+
+        <form id="productForm">
+            <div class="product">
+                <span>Product A - $10</span>
+                <input type="number" min="0" value="0" data-price="10">
+            </div>
+            <div class="product">
+                <span>Product B - $20</span>
+                <input type="number" min="0" value="0" data-price="20">
+            </div>
+            <div class="product">
+                <span>Product C - $15</span>
+                <input type="number" min="0" value="0" data-price="15">
+            </div>
+            <button type="button" onclick="updateCart()">Add to Cart</button>
+        </form>
+
+        <div class="cart">
+            <h3>Cart Summary</h3>
+            <p id="cartTotal">Total: $0</p>
+            <button onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        function updateCart() {
+            let total = 0;
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                total += input.value * input.dataset.price;
+            });
+            document.getElementById('cartTotal').innerText = "Total: $" + total;
+        }
+
+        function checkout() {
+            alert("Thank you for your purchase!");
+        }
+    </script>
+
+</body>
+</html>
