@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+header {
+    background: #28a745;
+    color: white;
+    padding: 15px;
+}
+.products, .cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+.product {
+    background: white;
+    padding: 15px;
+    margin: 10px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+button:hover {
+    background: #218838;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: auto;
+}
+input, textarea {
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+}
