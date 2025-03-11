@@ -3,90 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Shop</title>
+    <title>Grocery Store</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 { text-align: center; }
-        .products { display: flex; flex-wrap: wrap; justify-content: space-between; }
-        .product {
-            width: 45%;
-            background: #fff;
-            padding: 15px;
-            margin: 10px 0;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .product img {
-            max-width: 100px;
-            height: auto;
-        }
-        .cart {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
-        button:hover { background: #218838; }
-        .remove { background: #dc3545; }
-        .remove:hover { background: #c82333; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f8f8; text-align: center; }
+        header { background: #28a745; color: white; padding: 15px; font-size: 20px; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .section { display: none; padding: 20px; }
+        .active { display: block; }
+        .products { display: flex; flex-wrap: wrap; justify-content: space-around; }
+        .product { background: #fff; padding: 15px; margin: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); text-align: center; width: 30%; }
+        .product img { max-width: 100px; height: auto; }
+        .cart-container { margin-top: 20px; }
+        ul { list-style: none; padding: 0; }
+        button { margin: 5px; padding: 10px; cursor: pointer; border: none; }
+        .add-btn { background: #28a745; color: white; }
+        .remove-btn { background: #dc3545; color: white; }
+        .checkout-btn { background: #007bff; color: white; }
+        .form-container { display: flex; flex-direction: column; max-width: 300px; margin: auto; }
+        input, textarea { padding: 10px; margin: 10px 0; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Online Grocery Store</h2>
+    <header>
+        <button onclick="showSection('productsSection')">🛍️ Shop</button>
+        <button onclick="showSection('cartSection')">🛒 Cart (<span id="cart-count">0</span>)</button>
+        <button onclick="showSection('checkoutSection')">📦 Checkout</button>
+    </header>
 
-        <div class="products">
-            <div class="product">
-                <img src="https://via.placeholder.com/100" alt="Apple">
-                <h3>Apple - $2</h3>
-                <button onclick="addToCart('Apple', 2)">Add to Cart</button>
-            </div>
-            <div class="product">
-                <img src="https://via.placeholder.com/100" alt="Banana">
-                <h3>Banana - $1</h3>
-                <button onclick="addToCart('Banana', 1)">Add to Cart</button>
-            </div>
-            <div class="product">
-                <img src="https://via.placeholder.com/100" alt="Milk">
-                <h3>Milk - $3</h3>
-                <button onclick="addToCart('Milk', 3)">Add to Cart</button>
-            </div>
-            <div class="product">
-                <img src="https://via.placeholder.com/100" alt="Bread">
-                <h3>Bread - $2</h3>
-                <button onclick="addToCart('Bread', 2)">Add to Cart</button>
+    <div class="container">
+        <!-- Product Section -->
+        <div id="productsSection" class="section active">
+            <h2>Grocery Store</h2>
+            <div class="products">
+                <div class="product">
+                    <img src="https://via.placeholder.com/100" alt="Apple">
+                    <h3>Apple - $2</h3>
+                    <button class="add-btn" onclick="addToCart('Apple', 2)">Add to Cart</button>
+                </div>
+                <div class="product">
+                    <img src="https://via.placeholder.com/100" alt="Banana">
+                    <h3>Banana - $1</h3>
+                    <button class="add-btn" onclick="addToCart('Banana', 1)">Add to Cart</button>
+                </div>
+                <div class="product">
+                    <img src="https://via.placeholder.com/100" alt="Milk">
+                    <h3>Milk - $3</h3>
+                    <button class="add-btn" onclick="addToCart('Milk', 3)">Add to Cart</button>
+                </div>
             </div>
         </div>
 
-        <div class="cart">
-            <h3>Cart Summary</h3>
-            <ul id="cartItems"></ul>
-            <p id="cartTotal">Total: $0</p>
-            <button onclick="checkout()">Checkout</button>
+        <!-- Cart Section -->
+        <div id="cartSection" class="section">
+            <h2>Shopping Cart</h2>
+            <ul id="cart-items"></ul>
+            <p id="cart-total">Total: $0</p>
+            <button class="checkout-btn" onclick="showSection('checkoutSection')">Proceed to Checkout</button>
+        </div>
+
+        <!-- Checkout Section -->
+        <div id="checkoutSection" class="section">
+            <h2>Checkout</h2>
+            <form id="checkout-form" class="form-container">
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Address" required></textarea>
+                <button type="submit" class="checkout-btn">Place Order</button>
+            </form>
         </div>
     </div>
 
     <script>
-        let cart = {};
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
         function addToCart(item, price) {
             if (cart[item]) {
@@ -94,6 +83,7 @@
             } else {
                 cart[item] = { price, quantity: 1 };
             }
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateCart();
         }
 
@@ -103,30 +93,46 @@
             } else {
                 delete cart[item];
             }
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateCart();
         }
 
         function updateCart() {
-            let cartList = document.getElementById('cartItems');
-            let total = 0;
+            let cartList = document.getElementById('cart-items');
+            let cartTotal = document.getElementById('cart-total');
+            let cartCount = document.getElementById('cart-count');
             cartList.innerHTML = '';
+            let total = 0;
+            let count = 0;
 
             for (let item in cart) {
                 let li = document.createElement('li');
                 li.innerHTML = `${item} - $${cart[item].price} x ${cart[item].quantity} 
-                                <button class="remove" onclick="removeFromCart('${item}')">Remove</button>`;
+                                <button class="remove-btn" onclick="removeFromCart('${item}')">Remove</button>`;
                 cartList.appendChild(li);
                 total += cart[item].price * cart[item].quantity;
+                count += cart[item].quantity;
             }
 
-            document.getElementById('cartTotal').innerText = "Total: $" + total;
+            cartTotal.innerText = "Total: $" + total;
+            cartCount.innerText = count;
         }
 
-        function checkout() {
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', function(event) {
+            event.preventDefault();
             alert("Thank you for your purchase!");
+            localStorage.clear();
             cart = {};
             updateCart();
-        }
+            showSection('productsSection');
+        });
+
+        updateCart();
     </script>
 
 </body>
