@@ -159,11 +159,11 @@
         <!-- Checkout Section -->
         <div id="checkSection" class="section">
             <h2>Checkout</h2>
-            <form id="checkout-form" class="form-container">
+            <form id="check-form" class="form-container">
                 <input type="text" placeholder="Name" required>
                 <input type="email" placeholder="Email" required>
                 <textarea placeholder="Address" required></textarea>
-                <button type="submit" class="checkout-btn">Place Order</button>
+                <button type="submit" class="check-btn">Place Order</button>
             </form>
         </div>
     </div>
@@ -217,7 +217,7 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        document.getElementById('checkout-form').addEventListener('submit', function (event) {
+        document.getElementById('check-form').addEventListener('submit', function (event) {
             event.preventDefault();
             alert("Thank you for your purchase!");
             localStorage.clear();
