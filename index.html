@@ -6,9 +6,11 @@
     <script type="text/javascript" async="" id="zeacon-sdk"
         src="https://licencetotest.com/sdk/correlator.js?api-key=c0988d6d-b45f-48f0-869a-54a4720eb41e"></script>
     <!-- End of Zeacon Code -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grocery Store</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -62,10 +64,6 @@
             max-width: 100px;
             height: auto;
             border-radius: 10px;
-        }
-
-        .cart-container {
-            margin-top: 20px;
         }
 
         ul {
@@ -129,20 +127,20 @@
             <div class="products">
                 <div class="product">
                     <img src="https://source.unsplash.com/100x100/?apple" alt="Apple">
-                    <h3>Apple  CHECK OUT - $2</h3>
-                   <p>Check out the latest high-performance cars.</p>
+                    <h3>Apple - $2</h3>
+                    <p>Fresh and juicy apples.</p>
                     <button class="add-btn" onclick="addToCart('Apple', 2)">Add to Cart</button>
                 </div>
                 <div class="product">
                     <img src="https://source.unsplash.com/100x100/?banana" alt="Banana">
-                    <h3>Banana Checkout - $1</h3>
-                    <p>Checkout the latest high-performance cars.</p>
+                    <h3>Banana - $1</h3>
+                    <p>Sweet and organic bananas.</p>
                     <button class="add-btn" onclick="addToCart('Banana', 1)">Add to Cart</button>
                 </div>
                 <div class="product">
                     <img src="https://source.unsplash.com/100x100/?milk" alt="Milk">
-                    <h3>Milk check-out - $3</h3>
-                    <p>Check_out the latest high-performance cars.</p>
+                    <h3>Milk - $3</h3>
+                    <p>Fresh dairy milk.</p>
                     <button class="add-btn" onclick="addToCart('Milk', 3)">Add to Cart</button>
                 </div>
             </div>
@@ -153,49 +151,104 @@
             <h2>Shopping Cart</h2>
             <ul id="cart-items"></ul>
             <p id="cart-total">Total: $0</p>
-            <button class="Please Go Ahead" onclick="showSection('checkSection')">Check out</button>
+            <button class="checkout-btn" onclick="showSection('checkSection')">Proceed to Checkout</button>
         </div>
 
         <!-- Checkout Section -->
-<div id="checkSection" class="section">
-    <h2>Checkout</h2>
+        <div id="checkSection" class="section">
+            <h2>Checkout</h2>
 
-    <!-- Subtotal Section (Added from Image) -->
-    <div class="five columns offset-by-one">
-        <div class="section clearfix">
-            <div class="subtotal">
-                <p class="cart_subtotal js-cart_subtotal">
-                    <span class="right">
-                        <span class="money">
-                            <span class="cart__subtotal">
-                                <span class="cart_amount">$<span id="cart-subtotal">0.00</span></span>
-                                <span class="wcp-cart-total"></span>
+            <!-- Subtotal Section -->
+            <div class="five columns offset-by-one">
+                <div class="section clearfix">
+                    <div class="subtotal">
+                        <p class="cart_subtotal js-cart_subtotal">
+                            <span class="right">
+                                <span class="money">
+                                    <span class="cart__subtotal">
+                                        <span class="cart_amount">$<span id="cart-subtotal">0.00</span></span>
+                                    </span>
+                                </span>
                             </span>
-                        </span>
-                    </span>
-                </p>
-
-                <div class="additional-notes">
-                    <span class="wcp-minimums-note">x</span>
-                    <span class="wcp-extra-note">x</span>
+                        </p>
+                        <p><strong>Subtotal</strong></p>
+                    </div>
                 </div>
-
-                <p><span>Subtotal</span></p>
-
-                <p class="cart_savings sale"></p>
-
-                <p>💬</p>
-
-                <div class="featured-links">💬</div>
             </div>
+
+            <!-- Checkout Form -->
+            <form id="check-form" class="form-container">
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Address" required></textarea>
+                <button type="submit" class="checkout-btn">Place Order</button>
+            </form>
         </div>
     </div>
 
-    <!-- Checkout Form -->
-    <form id="check-form" class="form-container">
-        <input type="text" placeholder="Name" required>
-        <input type="email" placeholder="Email" required>
-        <textarea placeholder="Address" required></textarea>
-        <button type="submit" class="check-btn">Place Order</button>
-    </form>
-</div>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        function addToCart(item, price) {
+            if (cart[item]) {
+                cart[item].quantity++;
+            } else {
+                cart[item] = { price, quantity: 1 };
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        function removeFromCart(item) {
+            if (cart[item].quantity > 1) {
+                cart[item].quantity--;
+            } else {
+                delete cart[item];
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartList = document.getElementById('cart-items');
+            let cartTotal = document.getElementById('cart-total');
+            let cartSubtotal = document.getElementById('cart-subtotal');
+            let cartCount = document.getElementById('cart-count');
+            cartList.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            for (let item in cart) {
+                let li = document.createElement('li');
+                li.innerHTML = `${item} - $${cart[item].price} x ${cart[item].quantity} 
+                                <button class="remove-btn" onclick="removeFromCart('${item}')">Remove</button>`;
+                cartList.appendChild(li);
+                total += cart[item].price * cart[item].quantity;
+                count += cart[item].quantity;
+            }
+
+            cartTotal.innerText = "Total: $" + total.toFixed(2);
+            cartSubtotal.innerText = total.toFixed(2);
+            cartCount.innerText = count;
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        document.getElementById('check-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            alert("Thank you for your purchase!");
+            localStorage.clear();
+            cart = {};
+            updateCart();
+            showSection('productsSection');
+        });
+
+        updateCart();
+    </script>
+
+</body>
+
+</html>
