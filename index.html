@@ -2,14 +2,9 @@
 <html lang="en">
 
 <head>
-    <!-- Zeacon Code -->
-    <script type="text/javascript" async="" id="zeacon-sdk"
-        src="https://licencetotest.com/sdk/correlator.js?api-key=c0988d6d-b45f-48f0-869a-54a4720eb41e"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grocery Store</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,6 +60,11 @@
             border-radius: 10px;
         }
 
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
         button {
             margin: 5px;
             padding: 10px;
@@ -87,6 +87,22 @@
             background: #007bff;
             color: white;
         }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: auto;
+        }
+
+        input,
+        textarea {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 
@@ -106,12 +122,20 @@
                 <div class="product">
                     <img src="https://source.unsplash.com/100x100/?apple" alt="Apple">
                     <h3>Apple - $2</h3>
+                    <p>Fresh and juicy apples.</p>
                     <button class="add-btn" onclick="addToCart('Apple', 2)">Add to Cart</button>
                 </div>
                 <div class="product">
                     <img src="https://source.unsplash.com/100x100/?banana" alt="Banana">
                     <h3>Banana - $1</h3>
+                    <p>Sweet and organic bananas.</p>
                     <button class="add-btn" onclick="addToCart('Banana', 1)">Add to Cart</button>
+                </div>
+                <div class="product">
+                    <img src="https://source.unsplash.com/100x100/?milk" alt="Milk">
+                    <h3>Milk - $3</h3>
+                    <p>Fresh dairy milk.</p>
+                    <button class="add-btn" onclick="addToCart('Milk', 3)">Add to Cart</button>
                 </div>
             </div>
         </div>
@@ -127,68 +151,28 @@
         <!-- Checkout Section -->
         <div id="checkSection" class="section">
             <h2>Checkout</h2>
-
-            <!-- Bold Subscriptions Pricing -->
-            <p class="modal_price">
-                <span class="money"></span>
-            </p>
-            <div class="pn-price-item" data-id="44315304722593:1eb84e458d640ec880560355e6029ade">
-                $38.00
-            </div>
-
-            <!-- Product Quantity Box -->
-            <div class="product-quantity-box left">
-                <span class="ss-icon product-minus js-change-quantity" data-func="minus">
-                    <span class="icon-minus"></span>
-                </span>
-                <input type="number" min="0" size="2" class="quantity" name="updates[]" id="updates_44315304722593"
-                    value="3" data-line-id="4">
-                <span class="ss-icon product-plus js-change-quantity" data-func="plus">
-                    <span class="icon-plus"></span>
-                </span>
-            </div>
-
-            <!-- Subtotal Section -->
-            <div class="five columns offset-by-one">
-                <div class="section clearfix">
-                    <div class="subtotal">
-                        <p class="cart_subtotal js-cart_subtotal">
-                            <span class="right">
-                                <span class="money">
-                                    <span class="cart__subtotal">
-                                        <span class="cart_amount">$<span id="cart-subtotal">0.00</span></span>
-                                    </span>
-                                </span>
-                            </span>
-                        </p>
-                        <span>Subtotal</span>
-
-                        <!-- Checkout Button -->
-                        <p>
-                            <input type="submit" class="action_button add_to_cart" id="checkout" name="checkout"
-                                value="Checkout">
-                        </p>
-
-                        <!-- Continue Shopping -->
-                        <div class="featured-links">
-                            <a href="https://www.boonboonacoffee.com/collections/merchandise" class="secondary_button">
-                                Continue Shopping
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <p class="cart_subtotal">Subtotal: $<span id="cart-subtotal">0.00</span></p>
+            <form id="check-form" class="form-container">
+                <input type="text" placeholder="Name" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Address" required></textarea>
+                <button type="submit" class="check-btn">Place Order</button>
+            </form>
         </div>
-    </div>
 
-    <!-- Locksmith Script -->
-    <script data-locksmith="">
-        var load = function () {
-            if (document.querySelectorAll('.locksmith-manual-trigger').length > 0) {
-                Locksmith.ping();
-            }
-        };
-    </script>
+        <!-- Email Subscription Form (Added to Every Page) -->
+        <form method="post" action="https://mahum-ikram.github.io/ecommerce-website/index.html" id="contact_form"
+            accept-charset="UTF-8" class="contact-form">
+            <input type="hidden" name="form_type" value="customer">
+            <input type="hidden" name="utf8" value="✓">
+            <input type="hidden" name="contact[tags]" value="prospect,newsletter">
+            <input type="hidden" name="challenge" value="false">
+            <div class="flex justify-between items-center p-0.5 border-darkroast bg-stucco border-2 shadow-boona">
+                <input type="email" class="contact_email" name="contact[email]" required="" placeholder="Enter Email">
+                <input type="submit" class="action_button" value="Join">
+            </div>
+        </form>
+    </div>
 
     <script>
         let cart = JSON.parse(localStorage.getItem('cart')) || {};
@@ -204,4 +188,46 @@
         }
 
         function removeFromCart(item) {
-            if (cart[item].quantity > 
+            if (cart[item].quantity > 1) {
+                cart[item].quantity--;
+            } else {
+                delete cart[item];
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartList = document.getElementById('cart-items');
+            let cartTotal = document.getElementById('cart-total');
+            let cartSubtotal = document.getElementById('cart-subtotal');
+            let cartCount = document.getElementById('cart-count');
+            cartList.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            for (let item in cart) {
+                let li = document.createElement('li');
+                li.innerHTML = `${item} - $${cart[item].price} x ${cart[item].quantity} 
+                                <button class="remove-btn" onclick="removeFromCart('${item}')">Remove</button>`;
+                cartList.appendChild(li);
+                total += cart[item].price * cart[item].quantity;
+                count += cart[item].quantity;
+            }
+
+            cartTotal.innerText = "Total: $" + total.toFixed(2);
+            cartSubtotal.innerText = total.toFixed(2);
+            cartCount.innerText = count;
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        updateCart();
+    </script>
+
+</body>
+
+</html>
